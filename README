@@ -1,8 +1,8 @@
 This is a simple nose plugin which acts like the SkipTest plugin for Google's
 RequestError exception.
 
-Testing against live Google APIs—other than being a bad idea to begin
-with—often results in random RequestError responses from Google. We may not
+Testing against live Google APIs--other than being a bad idea to begin
+with--often results in random RequestError responses from Google. We may not
 want these exceptions to cause test failures as they are transient and may be
 handled gracefully by other parts of the system. To that end, ``nose-skipreq``
 was created.
