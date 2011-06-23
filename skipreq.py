@@ -1,4 +1,5 @@
 from nose.plugins.errorclass import ErrorClass, ErrorClassPlugin
+from nose.plugins.skip import SkipTest
 
 from gdata.client import RequestError
 
@@ -36,4 +37,7 @@ class SkipRequestError(ErrorClassPlugin):
         enable = getattr(options, 'skipreq', False)
         if enable:
             self.enabled = True
+
+    def formatError(self, test, err):
+        return (SkipTest, err[1], err[2])
 
