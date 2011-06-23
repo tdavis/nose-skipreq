@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README')).read()
 
 
-version = '1.0'
+version = '1.1'
 
 
 setup(name='nose-skipreq',
