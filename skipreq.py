@@ -1,10 +1,10 @@
-from nose.plugins.errorclass import ErrorClass, ErrorClassPlugin
+from nose.plugins import Plugin
 from nose.plugins.skip import SkipTest
 
 from gdata.client import RequestError
 
 
-class SkipRequestError(ErrorClassPlugin):
+class SkipRequestError(Plugin):
     """
     Plugin that will skip tests that raise Google's ``gdata.client.RequestError``.
     When RequestError is raised, the exception will be logged in the skipped
@@ -12,10 +12,8 @@ class SkipRequestError(ErrorClassPlugin):
     the exception will not be counted as an error or failure. This plugin
     is disabled by default but may be enabled with the ``--skipreq`` option.
     """
-    enabled = False
-    skipped = ErrorClass(RequestError,
-                         label='SKIP',
-                         isfailure=False)
+    codes = None
+    enable = False
 
     def options(self, parser, env):
         """
@@ -26,6 +24,10 @@ class SkipRequestError(ErrorClassPlugin):
                           dest='skipreq', default=env.get(env_opt, False),
                           help="Enable special handling of RequestError "
                           "exceptions.")
+        parser.add_option('--skip-req-codes', action='store',
+                          dest='skipreq_codes', default='',
+                          help="Comma-separated list of status codes to"
+                          "ignore.")
 
     def configure(self, options, conf):
         """
@@ -37,7 +39,16 @@ class SkipRequestError(ErrorClassPlugin):
         enable = getattr(options, 'skipreq', False)
         if enable:
             self.enabled = True
+        codes = getattr(options, 'skipreq_codes', None)
+        if codes:
+            self.codes = [int(c) for c in codes.split(',')]
 
     def formatError(self, test, err):
-        return (SkipTest, err[1], err[2])
+        ec, ev, et = err
+        ei = test.exc_info()[1]
+        if ec == RequestError and (not self.codes or
+                                   ei.status
+                                   in self.codes):
+            return (SkipTest, err[1], err[2])
+        return err
 
